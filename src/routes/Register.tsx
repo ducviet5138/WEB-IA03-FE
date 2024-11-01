@@ -2,6 +2,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TypeZRegister, zRegister } from "../types/schema/register";
 import { Stack, TextField, Box, Typography, Button } from "@mui/material";
+import { useState } from "react";
+import Toast from "../components/Toast";
 
 export default function Register() {
   const {
@@ -13,9 +15,16 @@ export default function Register() {
     mode: "all",
   });
 
+  const [showToast, setShowToast] = useState(false);
+
   const onSubmit = (data: TypeZRegister) => {
     console.log(data);
-  }
+    setShowToast(true);
+  };
+
+  const handleCloseToast = () => {
+    setShowToast(false);
+  };
 
   return (
     <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -38,6 +47,7 @@ export default function Register() {
         />
         <Button variant="contained" type="submit" fullWidth onClick={handleSubmit(onSubmit)}> Register </Button>
       </Stack>
+      {showToast && <Toast message="Registration successful!" onClose={handleCloseToast} status="error"/>}
     </Box>
   );
 }
