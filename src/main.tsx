@@ -1,15 +1,21 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import TopAppBar from "./components/TopNavBar.tsx";
-import { RouterProvider } from "react-router-dom";
-import router from "./routes/index.tsx";
 import { Box } from "@mui/material";
+import { Provider } from "react-redux";
+import store from "./stores";
+import { BrowserRouter } from "react-router-dom";
+import AppRoutes from "./routes";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <TopAppBar />
-    <Box sx={{ height: "calc(100vh - 64px)" }}>
-      <RouterProvider router={router} />
-    </Box>
+    <Provider store={store}>
+      <BrowserRouter>
+        <TopAppBar />
+        <Box sx={{ height: "calc(100vh - 64px)" }}>
+          <AppRoutes />
+        </Box>
+      </BrowserRouter>
+    </Provider>
   </StrictMode>
 );

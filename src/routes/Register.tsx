@@ -2,9 +2,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TypeZRegister, zRegister } from "../types/schema/register";
 import { Stack, TextField, Box, Typography, Button } from "@mui/material";
-import { useState } from "react";
-import Toast from "../components/Toast";
 import { TypeResponse } from "../types/response";
+import { useDispatch, useSelector } from "react-redux";
+import { showToast } from "../stores/toastSlice";
+import { RootState } from "../stores";
 
 export default function Register() {
   const {
@@ -16,10 +17,8 @@ export default function Register() {
     mode: "all",
   });
 
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [toastStatus, setToastStatus] = useState<"success" | "error">(
-    "success"
-  );
+  const toast = useSelector((state: RootState) => state.toast.toast);
+  const dispatch = useDispatch();
 
   const onSubmit = async (data: TypeZRegister) => {
     const endpoint = import.meta.env.VITE_ENDPOINT;
@@ -34,19 +33,20 @@ export default function Register() {
 
       const responseData = (await response.json()) as TypeResponse;
       if (responseData.statusCode === 200) {
-        setToastMessage("Registration successful");
-        setToastStatus("success");
+        dispatch(
+          showToast({ message: "Registration successful", status: "success" })
+        );
       } else {
         throw new Error(responseData.message);
       }
     } catch (error: any) {
-      setToastMessage(`Registration failed: ${error.message}`);
-      setToastStatus("error");
+      dispatch(
+        showToast({
+          message: `Registration failed: ${error.message}`,
+          status: "error",
+        })
+      );
     }
-  };
-
-  const handleCloseToast = () => {
-    setToastMessage(null);
   };
 
   return (
@@ -83,17 +83,10 @@ export default function Register() {
           fullWidth
           onClick={handleSubmit(onSubmit)}
         >
-          {" "}
-          Register{" "}
+          Register
         </Button>
       </Stack>
-      {toastMessage && (
-        <Toast
-          message={toastMessage}
-          onClose={handleCloseToast}
-          status={toastStatus}
-        />
-      )}
+      {toast}
     </Box>
   );
 }
